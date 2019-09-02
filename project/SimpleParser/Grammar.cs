@@ -71,21 +71,18 @@ namespace SimpleParser
             Close,
         }
 
-        private enum ParseType
-        {
-            Push,
-            PopPush,
-            Pop,
-        }
-
         private abstract class Node
         {
+
+            public abstract void Clear();
 
             private static int indent;
 
             public string name { get; }
 
             public NodeLife life = NodeLife.Init;
+
+            public abstract void Resolve();
 
             public bool Walk(Grammar grammar, TokenStream stream)
             {
@@ -97,7 +94,6 @@ namespace SimpleParser
                     stream.Reset(offset);
                 }
 
-                Console.WriteLine($"{pad} {rst} {life}");
                 indent--;
                 return rst;
             }
@@ -145,6 +141,21 @@ namespace SimpleParser
             public NonTerminalNode(string name, List<string[]> symbols) : base(name)
             {
                 this.symbols = symbols;
+            }
+
+            public override void Clear()
+            {
+                index = 0;
+                life = NodeLife.Init;
+                foreach (var definition in definitions)
+                {
+                    definition.Clear();
+                }
+            }
+
+            public override void Resolve()
+            {
+                definitions[index].Resolve();
             }
 
             public override bool Walk0(Grammar grammar, TokenStream stream)
@@ -201,6 +212,22 @@ namespace SimpleParser
             private List<Node> list = new List<Node>(); //元素栈
             private Stack<int> offsets = new Stack<int>();
 
+            public override void Clear()
+            {
+                life = NodeLife.Init;
+                list.Clear();
+                offsets.Clear();
+            }
+
+            public override void Resolve()
+            {
+                Console.WriteLine($"{name} -> {string.Join(" ", path)}");
+                foreach (var node in list)
+                {
+                    node.Resolve();
+                }
+            }
+
             public override bool Walk0(Grammar grammar, TokenStream stream)
             {
                 Debug.Assert(life != NodeLife.Close);
@@ -224,7 +251,8 @@ namespace SimpleParser
                             continue;
                         }
 
-                        n = Return(n, stream);
+                        offsets.Pop();
+                        n = Return(n-1, stream);
                         if (n < 0)
                         {
                             life = NodeLife.Close;
@@ -233,7 +261,7 @@ namespace SimpleParser
 
                         for (var i = n + 1; i < list.Count; i++)
                         {
-                            list[i] = CreateNode(grammar, i);
+                            list[i].Clear();
                         }
                     }
 
@@ -250,7 +278,7 @@ namespace SimpleParser
 
                     for (var i = n + 1; i < list.Count; i++)
                     {
-                        list[i] = CreateNode(grammar, i);
+                        list[i].Clear();
                     }
 
                     while (n < list.Count)
@@ -272,7 +300,7 @@ namespace SimpleParser
 
                         for (var i = n + 1; i < list.Count; i++)
                         {
-                            list[i] = CreateNode(grammar, i);
+                            list[i].Clear();
                         }
                     }
 
@@ -325,6 +353,14 @@ namespace SimpleParser
                 this.life = NodeLife.Close;
             }
 
+            public override void Clear()
+            {
+            }
+
+            public override void Resolve()
+            {
+            }
+
             public override bool Walk0(Grammar grammar, TokenStream stream)
             {
                 Console.WriteLine($"{pad} Walk terminal {name} at {stream}");
@@ -350,6 +386,9 @@ namespace SimpleParser
             Console.WriteLine(rst);
 
             Debug.Assert(stream.EOF);
+
+            Console.WriteLine();
+            root.Resolve();
         }
 
 
