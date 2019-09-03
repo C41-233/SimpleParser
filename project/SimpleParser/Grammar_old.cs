@@ -11,28 +11,6 @@ namespace SimpleParser
     public class Grammar_old
     {
 
-        private class Terminal
-        {
-            public int Token;
-            public Predicate<Token> Predicate;
-
-            public bool Match(Token token)
-            {
-                if (token.Type != Token)
-                {
-                    return false;
-                }
-
-                if (Predicate != null && !Predicate(token))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-
         private readonly Dictionary<string, Terminal> terminals = new Dictionary<string, Terminal>();
         private readonly Dictionary<string, List<string[]>> nonTerminals = new Dictionary<string, List<string[]>>();
         private readonly List<string[]> roots = new List<string[]>();
@@ -364,7 +342,7 @@ namespace SimpleParser
             public override bool Walk0(Grammar_old grammarOld, TokenStream stream)
             {
                 Console.WriteLine($"{pad} Walk terminal {name} at {stream}");
-                var token = stream.Next(pad);
+                var token = stream.Next();
                 if (token == null)
                 {
                     return false;
@@ -385,8 +363,6 @@ namespace SimpleParser
             Console.WriteLine();
             Console.WriteLine(rst);
 
-            Debug.Assert(stream.EOF);
-
             Console.WriteLine();
             root.Resolve();
         }
@@ -401,43 +377,5 @@ namespace SimpleParser
         {
             return terminals.TryGetValue(name, out terminal);
         }
-
-        private class TokenStream
-        {
-
-            private List<Token> tokens;
-            public bool EOF => Offset >= tokens.Count;
-
-            public int Offset { get; private set; }
-
-            public TokenStream(List<Token> tokens)
-            {
-                this.tokens = tokens;
-            }
-
-            public void Reset(int offset)
-            {
-               // Console.WriteLine($"reset {tokens[offset].Value}");
-                this.Offset = offset;
-            }
-
-            public Token Next(string pad)
-            {
-                if (Offset >= tokens.Count)
-                {
-                    Console.WriteLine($"{pad} eat EOF");
-                    return null;
-                }
-
-                Console.WriteLine($"{pad} eat {tokens[Offset].Value}");
-                return tokens[Offset++];
-            }
-
-            public override string ToString()
-            {
-                return tokens[Offset].Value;
-            }
-        }
-
     }
 }

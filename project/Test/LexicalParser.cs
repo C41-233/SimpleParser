@@ -72,11 +72,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new Token
-                        {
-                            Type = (int)TokenDefine.Semicolon,
-                            Value = ";",
-                        });
+                        Tokens.Add(new LexToken(TokenDefine.Semicolon, ";"));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -92,11 +88,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new Token
-                        {
-                            Type = (int)TokenDefine.OpenBrace,
-                            Value = "{",
-                        });
+                        Tokens.Add(new LexToken(TokenDefine.OpenBrace, "{"));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -112,11 +104,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new Token
-                        {
-                            Type = (int)TokenDefine.CloseBrace,
-                            Value = "}",
-                        });
+                        Tokens.Add(new LexToken(TokenDefine.CloseBrace, "}"));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -132,11 +120,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new Token
-                        {
-                            Type = (int)TokenDefine.Dot,
-                            Value = ".",
-                        });
+                        Tokens.Add(new LexToken(TokenDefine.Dot, "."));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -176,11 +160,7 @@ namespace Test
 
         private void EndToken()
         {
-            Tokens.Add(new Token
-            {
-                Type = (int)TokenDefine.Token,
-                Value = Buffer.ToString(),
-            });
+            Tokens.Add(new LexToken(TokenDefine.Token, Buffer.ToString()));
             Buffer.Clear();
         }
 
