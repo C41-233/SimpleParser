@@ -8,7 +8,7 @@ using System.Runtime.Remoting.Messaging;
 
 namespace SimpleParser
 {
-    public class Grammar
+    public class Grammar_old
     {
 
         private class Terminal
@@ -84,11 +84,11 @@ namespace SimpleParser
 
             public abstract void Resolve();
 
-            public bool Walk(Grammar grammar, TokenStream stream)
+            public bool Walk(Grammar_old grammarOld, TokenStream stream)
             {
                 indent++;
                 var offset = stream.Offset;
-                var rst = Walk0(grammar, stream);
+                var rst = Walk0(grammarOld, stream);
                 if(!rst)
                 {
                     stream.Reset(offset);
@@ -112,7 +112,7 @@ namespace SimpleParser
                 }
             }
 
-            public abstract bool Walk0(Grammar grammar, TokenStream stream);
+            public abstract bool Walk0(Grammar_old grammarOld, TokenStream stream);
 
             protected Node(string name)
             {
@@ -158,7 +158,7 @@ namespace SimpleParser
                 definitions[index].Resolve();
             }
 
-            public override bool Walk0(Grammar grammar, TokenStream stream)
+            public override bool Walk0(Grammar_old grammarOld, TokenStream stream)
             {
                 Debug.Assert(life != NodeLife.Close);
                 Console.WriteLine($"{pad} Walk node {name} at {stream}");
@@ -176,7 +176,7 @@ namespace SimpleParser
 
                 while (index < definitions.Count)
                 {
-                    var rst = definitions[index].Walk(grammar, stream);
+                    var rst = definitions[index].Walk(grammarOld, stream);
                     if (definitions[index].life == NodeLife.Close)
                     {
                         index++;
@@ -228,7 +228,7 @@ namespace SimpleParser
                 }
             }
 
-            public override bool Walk0(Grammar grammar, TokenStream stream)
+            public override bool Walk0(Grammar_old grammarOld, TokenStream stream)
             {
                 Debug.Assert(life != NodeLife.Close);
                 Console.WriteLine($"{pad} Walk path {name}[{N}]");
@@ -237,14 +237,14 @@ namespace SimpleParser
                     life = NodeLife.Open;
                     for (var i=0; i<path.Length; i++)
                     {
-                        list.Add(CreateNode(grammar, i));
+                        list.Add(CreateNode(grammarOld, i));
                     }
 
                     var n = 0;
                     while (n < list.Count)
                     {
                         offsets.Push(stream.Offset);
-                        var rst = list[n].Walk(grammar, stream);
+                        var rst = list[n].Walk(grammarOld, stream);
                         if (rst)
                         {
                             n++;
@@ -284,7 +284,7 @@ namespace SimpleParser
                     while (n < list.Count)
                     {
                         offsets.Push(stream.Offset);
-                        var rst = list[n].Walk(grammar, stream);
+                        var rst = list[n].Walk(grammarOld, stream);
                         if (rst)
                         {
                             n++;
@@ -325,14 +325,14 @@ namespace SimpleParser
                 return -1;
             }
 
-            private Node CreateNode(Grammar grammar, int i)
+            private Node CreateNode(Grammar_old grammarOld, int i)
             {
-                if (grammar.TryParseNonTerminal(path[i], out var symbols))
+                if (grammarOld.TryParseNonTerminal(path[i], out var symbols))
                 {
                     return new NonTerminalNode(path[i], symbols);
                 }
 
-                if (grammar.TryParseTerminal(path[i], out var terminal))
+                if (grammarOld.TryParseTerminal(path[i], out var terminal))
                 {
                     return new TerminalNode(path[i], terminal);
                 }
@@ -361,7 +361,7 @@ namespace SimpleParser
             {
             }
 
-            public override bool Walk0(Grammar grammar, TokenStream stream)
+            public override bool Walk0(Grammar_old grammarOld, TokenStream stream)
             {
                 Console.WriteLine($"{pad} Walk terminal {name} at {stream}");
                 var token = stream.Next(pad);
