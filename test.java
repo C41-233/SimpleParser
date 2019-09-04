@@ -24,3 +24,5 @@ public final class Strings{
 	}
 	
 }
+
+package c41.utility.string;

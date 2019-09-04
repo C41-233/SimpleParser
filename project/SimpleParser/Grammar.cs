@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SimpleParser
 {
-
     public partial class Grammar
     {
         private readonly Dictionary<string, Terminal> terminals = new Dictionary<string, Terminal>();
@@ -41,7 +40,10 @@ namespace SimpleParser
             var root = new RootTerminalNode(roots);
             using (var stream = new TokenStream(tokens))
             {
-                root.Parse(this, stream);
+                if (!root.Parse(this, stream))
+                {
+                    throw new ParseException($"unexpected token {stream.MostInputToken?.Value ?? "<eof>"}");
+                }
             }
 
             root.Visit(visitor);

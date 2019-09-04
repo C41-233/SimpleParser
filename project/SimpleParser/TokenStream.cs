@@ -11,6 +11,10 @@ namespace SimpleParser
 
         public int Offset { get; private set; }
 
+        public Token MostInputToken { get; private set; }
+
+        private int maxOffset;
+
         public TokenStream(IEnumerable<Token> tokens)
         {
             enumerator = tokens.GetEnumerator();
@@ -22,6 +26,17 @@ namespace SimpleParser
         }
 
         public Token Next()
+        {
+            var token = DoNext();
+            if (Offset >= maxOffset)
+            {
+                maxOffset = Offset;
+                MostInputToken = token;
+            }
+            return token;
+        }
+
+        private Token DoNext()
         {
             if (enumerator == null)
             {
