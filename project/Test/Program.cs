@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using SimpleParser;
 
 namespace Test
@@ -24,7 +20,7 @@ namespace Test
 
             Console.WriteLine();
 
-            var grammar = new Grammar_old();
+            var grammar = new Grammar();
 
             grammar.DefineTerminal("tk_package", (int) TokenDefine.Token, token => token.Value == "package");
             grammar.DefineTerminal("tk_public", (int)TokenDefine.Token, token => token.Value == "public");
@@ -40,12 +36,16 @@ namespace Test
 
             grammar.DefineTerminal("identifier", (int)TokenDefine.Token, token => Regex.IsMatch(token.Value, "[a-zA-Z]+[a-zA-Z0-9]*"));
 
-            grammar.DefineRoot("package_sentence", "class_definition");
             grammar.DefineRoot("class_definition");
+            grammar.DefineRoot("package_sentences", "class_definition");
 
-            grammar.DefineNonTerminal("package_sentence", "tk_package", "package_sentence_loop", "tk_semicolon");
-            grammar.DefineNonTerminal("package_sentence_loop", "identifier", "tk_dot", "package_sentence_loop");
-            grammar.DefineNonTerminal("package_sentence_loop", "identifier");
+            grammar.DefineNonTerminal("package_sentences", "package_sentence_loop");
+            grammar.DefineNonTerminal("package_sentence_loop", "package_sentence");
+            grammar.DefineNonTerminal("package_sentence_loop", "package_sentence", "package_sentence_loop");
+
+            grammar.DefineNonTerminal("package_sentence", "tk_package", "package_sentence_body_loop", "tk_semicolon");
+            grammar.DefineNonTerminal("package_sentence_body_loop", "identifier");
+            grammar.DefineNonTerminal("package_sentence_body_loop", "identifier", "tk_dot", "package_sentence_body_loop");
 
             grammar.DefineNonTerminal("class_definition", "tk_public", "tk_final", "tk_class", "identifier", "tk_open_brace", "tk_close_brace");
             grammar.DefineNonTerminal("class_definition", "tk_public", "tk_final", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
@@ -55,7 +55,47 @@ namespace Test
 
             grammar.DefineNonTerminal("function_definition", "tk_public", "tk_static", "tk_void", "identifier", "tk_open_brace", "tk_close_brace");
 
-            grammar.Parse(tokens);
+            grammar.Parse(tokens, new ASTVisitor());
+        }
+    }
+
+    class ASTVisitor : IASTVisitor
+    {
+
+        private int indent = 0;
+
+        public void BeginNode(IASTNode node)
+        {
+            Pad();
+            if (node.IsTerminal)
+            {
+                Console.WriteLine(node.Symbols.First());
+            }
+            else
+            {
+                Console.WriteLine($"<{node.Name}>");
+            }
+
+            indent++;
+        }
+
+        public void EndNode(IASTNode node)
+        {
+            indent--;
+            if (!node.IsTerminal)
+            {
+                Pad();
+                Console.WriteLine($"</{node.Name}>");
+            }
+
+        }
+
+        private void Pad()
+        {
+            for (var i = 0; i < indent; i++)
+            {
+                Console.Write("    ");
+            }
         }
     }
 }

@@ -31,12 +31,20 @@ namespace SimpleParser
 
         public void DefineRoot(params string[] symbols)
         {
-            roots.Add((string[]) symbols.Clone());
+            var root = new string[symbols.Length + 1];
+            symbols.CopyTo(root, 0);
+            roots.Add(root);
         }
 
-        public void Parse(IEnumerable<Token> tokens)
+        public void Parse(IEnumerable<Token> tokens, IASTVisitor visitor)
         {
+            var root = new RootTerminalNode(roots);
+            using (var stream = new TokenStream(tokens))
+            {
+                root.Parse(this, stream);
+            }
 
+            root.Visit(visitor);
         }
 
         private bool TryParseNonTerminal(string name, out List<string[]> symbols)

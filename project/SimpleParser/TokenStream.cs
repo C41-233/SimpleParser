@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleParser
 {
-    internal class TokenStream
+    internal class TokenStream : IDisposable
     {
 
         private readonly List<Token> buffers = new List<Token>();
@@ -51,5 +51,9 @@ namespace SimpleParser
             return null;
         }
 
+        void IDisposable.Dispose()
+        {
+            enumerator?.Dispose();
+        }
     }
 }
