@@ -6,55 +6,21 @@ using SimpleParser;
 namespace Test
 {
 
-    public class LexicalParser
+    public class MyParser : LexicalParser
     {
 
-        private enum LexStep
+        protected override void OnBegin()
         {
-            Init,
-            WaitForToken,
-            Whitespace,
-        }
-
-        private List<Token> Tokens;
-        private StringBuilder Buffer;
-        private LexStep Step;
-
-        private void Init()
-        {
-            Tokens = new List<Token>();
-            Buffer = new StringBuilder();
             Step = LexStep.Init;
         }
 
-        private void Clean()
+        protected override void OnEnd()
         {
-            Tokens = null;
-            Buffer = null;
         }
 
-        public List<Token> Parse(string file)
+        protected override bool Read()
         {
-            Init();
-            using (var reader = new StreamReader(new FileStream(file, FileMode.Open), Encoding.UTF8))
-            {
-                int b;
-                do
-                {
-                    b = reader.Read();
-                    while (!Eat(b))
-                    {
-                    }
-                } while (b != -1);
-            }
-            var tokens = Tokens;
-            Clean();
-            return tokens;
-        }
-
-        private bool Eat(int value)
-        {
-            var ch = (char)value;
+            var ch = (char)ByteValue;
             if (char.IsWhiteSpace(ch))
             {
                 switch (Step)
@@ -72,7 +38,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new LexToken(TokenDefine.Semicolon, ";"));
+                        PushToken(new LexToken(TokenDefine.Semicolon, ";", LineNumber, ColumnNumber));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -88,7 +54,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new LexToken(TokenDefine.OpenBrace, "{"));
+                        PushToken(new LexToken(TokenDefine.OpenBrace, "{", LineNumber, ColumnNumber));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -104,7 +70,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new LexToken(TokenDefine.CloseBrace, "}"));
+                        PushToken(new LexToken(TokenDefine.CloseBrace, "}", LineNumber, ColumnNumber));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -120,7 +86,7 @@ namespace Test
                 switch (Step)
                 {
                     case LexStep.Init:
-                        Tokens.Add(new LexToken(TokenDefine.Dot, "."));
+                        PushToken(new LexToken(TokenDefine.Dot, ".", LineNumber, ColumnNumber));
                         break;
                     case LexStep.WaitForToken:
                         EndToken();
@@ -137,18 +103,18 @@ namespace Test
                 {
                     case LexStep.Init:
                         {
-                            Buffer.Append(ch);
+                            PushBuffer();
                             Step = LexStep.WaitForToken;
                             break;
                         }
                     case LexStep.WaitForToken:
                         {
-                            Buffer.Append(ch);
+                            PushBuffer();
                             break;
                         }
                     case LexStep.Whitespace:
                         {
-                            Buffer.Append(ch);
+                            PushBuffer();
                             Step = LexStep.WaitForToken;
                             break;
                         }
@@ -160,9 +126,18 @@ namespace Test
 
         private void EndToken()
         {
-            Tokens.Add(new LexToken(TokenDefine.Token, Buffer.ToString()));
-            Buffer.Clear();
+            EndBuffer(out var value, out var line, out var column);
+            PushToken(new LexToken(TokenDefine.Token, value, line, column));
         }
+
+        private enum LexStep
+        {
+            Init,
+            WaitForToken,
+            Whitespace,
+        }
+
+        private LexStep Step;
 
     }
 

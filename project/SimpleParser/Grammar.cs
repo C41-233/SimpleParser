@@ -42,7 +42,12 @@ namespace SimpleParser
             {
                 if (!root.Parse(this, stream))
                 {
-                    throw new ParseException($"unexpected token {stream.MostInputToken?.Value ?? "<eof>"}");
+                    var token = stream.MostInputToken;
+                    if (token == null)
+                    {
+                        throw new ParseException("unexpected token <eof>");
+                    }
+                    throw new ParseException($"unexpected token {token.Value} at ({token.Line},{token.Column})");
                 }
             }
 

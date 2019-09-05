@@ -20,9 +20,8 @@ public final class Strings{
 	}
 	
 	public static void Fun2{
-		
+	}
 	}
 	
 }
 
-package c41.utility.string;

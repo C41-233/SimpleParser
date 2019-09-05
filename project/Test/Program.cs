@@ -10,7 +10,7 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var parse = new LexicalParser();
+            var parse = new MyParser();
             var tokens = parse.Parse(@"G:\workspace\SimpleParser\test.java");
 
             foreach (var token in tokens)
@@ -47,9 +47,9 @@ namespace Test
             grammar.DefineNonTerminal("package_sentence_body_loop", "identifier");
             grammar.DefineNonTerminal("package_sentence_body_loop", "identifier", "tk_dot", "package_sentence_body_loop");
 
-            grammar.DefineNonTerminal("class_definition", "tk_public", "tk_final", "tk_class", "identifier", "tk_open_brace", "tk_close_brace");
             grammar.DefineNonTerminal("class_definition", "tk_public", "tk_final", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
 
+            grammar.DefineNonTerminal("function_loop");
             grammar.DefineNonTerminal("function_loop", "function_definition");
             grammar.DefineNonTerminal("function_loop", "function_definition", "function_loop");
 

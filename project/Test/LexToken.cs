@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SimpleParser;
+﻿using SimpleParser;
 
 namespace Test
 {
     public class LexToken : Token
     {
 
-        public LexToken(TokenDefine type, string value) : base((int)type, value)
+        public LexToken(TokenDefine type, string value, int line, int column) : base((int)type, value, line, column)
         {
         }
 
