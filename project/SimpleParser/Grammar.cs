@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SimpleParser
@@ -35,12 +36,57 @@ namespace SimpleParser
             roots.Add(root);
         }
 
+        private bool rst;
+
         public void Parse(IEnumerable<Token> tokens, IASTVisitor visitor)
         {
             var root = new RootTerminalNode(roots);
             using (var stream = new TokenStream(tokens))
             {
-                if (!root.Parse(this, stream))
+                var stack = new Stack<IEnumerator>();
+                var offsets = new Stack<int>();
+                stack.Push(root.Parse(this, stream));
+                offsets.Push(stream.Offset);
+                while (stack.Count > 0)
+                {
+                    var top = stack.Peek();
+                    if (top.MoveNext())
+                    {
+                        var obj = top.Current;
+                        if (obj is IEnumerator enumerator)
+                        {
+                            stack.Push(enumerator);
+                            offsets.Push(stream.Offset);
+                        }
+                        else if (obj is bool b)
+                        {
+                            rst = b;
+                            if (!b)
+                            {
+                                var offset = offsets.Peek();
+                                stream.Reset(offset);
+                            }
+
+                            stack.Pop();
+                            offsets.Pop();
+                            if (top is IDisposable disposable)
+                            {
+                                disposable.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        stack.Pop();
+                        offsets.Pop();
+                        if (top is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
+                }
+
+                if (!rst)
                 {
                     var token = stream.MostInputToken;
                     if (token == null)

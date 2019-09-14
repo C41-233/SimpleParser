@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace SimpleParser
 {
@@ -36,7 +37,7 @@ namespace SimpleParser
             public override bool IsClosed => isClosed;
             private bool isClosed;
 
-            protected override bool DoParse(Grammar grammar, TokenStream stream)
+            public override IEnumerator Parse(Grammar grammar, TokenStream stream)
             {
                 if (paths == null)
                 {
@@ -50,7 +51,7 @@ namespace SimpleParser
                 while (index < paths.Length)
                 {
                     var path = paths[index];
-                    var rst = path.Parse(grammar, stream);
+                    yield return path.Parse(grammar, stream);
                     if (path.IsClosed)
                     {
                         index++;
@@ -61,11 +62,46 @@ namespace SimpleParser
                         isClosed = true;
                     }
 
-                    if (rst)
+                    if (grammar.rst)
                     {
-                        return true;
+                        yield return true;
+                        yield break;
                     }
                 }
+
+                yield return false;
+            }
+
+            protected override bool DoParse(Grammar grammar, TokenStream stream)
+            {
+                //if (paths == null)
+                //{
+                //    paths = new NonTerminalPath[symbols.Count];
+                //    for (var i = 0; i < symbols.Count; i++)
+                //    {
+                //        paths[i] = new NonTerminalPath(Name, symbols[i]);
+                //    }
+                //}
+
+                //while (index < paths.Length)
+                //{
+                //    var path = paths[index];
+                //    var rst = path.Parse(grammar, stream);
+                //    if (path.IsClosed)
+                //    {
+                //        index++;
+                //    }
+
+                //    if (index >= paths.Length)
+                //    {
+                //        isClosed = true;
+                //    }
+
+                //    if (rst)
+                //    {
+                //        return true;
+                //    }
+                //}
 
                 return false;
             }

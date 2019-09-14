@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace SimpleParser
 {
@@ -26,6 +27,12 @@ namespace SimpleParser
             }
 
             public override bool IsClosed => true;
+
+            public override IEnumerator Parse(Grammar grammar, TokenStream stream)
+            {
+                var next = stream.Next();
+                yield return next == null;
+            }
 
             protected override bool DoParse(Grammar grammar, TokenStream stream)
             {

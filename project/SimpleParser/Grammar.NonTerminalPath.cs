@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace SimpleParser
@@ -39,7 +40,7 @@ namespace SimpleParser
                 }
             }
 
-            protected override bool DoParse(Grammar grammar, TokenStream stream)
+            public override IEnumerator Parse(Grammar grammar, TokenStream stream)
             {
                 if (nodes == null)
                 {
@@ -62,7 +63,8 @@ namespace SimpleParser
                     if (!BackTrace(ref n, stream))
                     {
                         isClosed = true;
-                        return false;
+                        yield return false;
+                        yield break;
                     }
 
                     for (var i = n + 1; i < nodes.Length; i++)
@@ -74,8 +76,8 @@ namespace SimpleParser
                 while (n < nodes.Length)
                 {
                     offsets.Push(stream.Offset);
-                    var rst = nodes[n].Parse(grammar, stream);
-                    if (rst)
+                    yield return nodes[n].Parse(grammar, stream);
+                    if (grammar.rst)
                     {
                         n++;
                         continue;
@@ -86,7 +88,8 @@ namespace SimpleParser
                     if (!BackTrace(ref n, stream))
                     {
                         isClosed = true;
-                        return false;
+                        yield return false;
+                        yield break;
                     }
 
                     for (var i = n + 1; i < nodes.Length; i++)
@@ -94,6 +97,65 @@ namespace SimpleParser
                         nodes[i].Clear();
                     }
                 }
+
+                yield return true;
+            }
+
+            protected override bool DoParse(Grammar grammar, TokenStream stream)
+            {
+                //if (nodes == null)
+                //{
+                //    nodes = new ParseNode[path.Length];
+                //    for (var i = 0; i < path.Length; i++)
+                //    {
+                //        nodes[i] = CreateNode(grammar, i);
+                //    }
+                //}
+
+                //int n;
+                //if (init)
+                //{
+                //    init = false;
+                //    n = 0;
+                //}
+                //else
+                //{
+                //    n = nodes.Length - 1;
+                //    if (!BackTrace(ref n, stream))
+                //    {
+                //        isClosed = true;
+                //        return false;
+                //    }
+
+                //    for (var i = n + 1; i < nodes.Length; i++)
+                //    {
+                //        nodes[i].Clear();
+                //    }
+                //}
+
+                //while (n < nodes.Length)
+                //{
+                //    offsets.Push(stream.Offset);
+                //    var rst = nodes[n].Parse(grammar, stream);
+                //    if (rst)
+                //    {
+                //        n++;
+                //        continue;
+                //    }
+
+                //    offsets.Pop();
+                //    n--;
+                //    if (!BackTrace(ref n, stream))
+                //    {
+                //        isClosed = true;
+                //        return false;
+                //    }
+
+                //    for (var i = n + 1; i < nodes.Length; i++)
+                //    {
+                //        nodes[i].Clear();
+                //    }
+                //}
 
                 return true;
             }

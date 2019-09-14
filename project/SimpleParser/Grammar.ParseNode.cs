@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace SimpleParser
 {
@@ -17,16 +18,18 @@ namespace SimpleParser
                 Name = name;
             }
 
-            public bool Parse(Grammar grammar, TokenStream stream)
-            {
-                var offset = stream.Offset;
-                var rst = DoParse(grammar, stream);
-                if (!rst)
-                {
-                    stream.Reset(offset);
-                }
-                return rst;
-            }
+            //public bool Parse(Grammar grammar, TokenStream stream)
+            //{
+            //    var offset = stream.Offset;
+            //    var rst = DoParse(grammar, stream);
+            //    if (!rst)
+            //    {
+            //        stream.Reset(offset);
+            //    }
+            //    return rst;
+            //}
+
+            public abstract IEnumerator Parse(Grammar grammar, TokenStream stream);
 
             protected abstract bool DoParse(Grammar grammar, TokenStream stream);
 

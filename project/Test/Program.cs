@@ -15,7 +15,7 @@ namespace Test
 
             foreach (var token in tokens)
             {
-                Console.WriteLine($"{(TokenDefine)token.Type} {token.Value}");
+                //Console.WriteLine($"{(TokenDefine)token.Type} {token.Value}");
             }
 
             Console.WriteLine();
@@ -69,11 +69,11 @@ namespace Test
             Pad();
             if (node.IsTerminal)
             {
-                Console.WriteLine(node.Symbols.First());
+               // Console.WriteLine(node.Symbols.First());
             }
             else
             {
-                Console.WriteLine($"<{node.Name}>");
+                //Console.WriteLine($"<{node.Name}>");
             }
 
             indent++;
@@ -85,7 +85,7 @@ namespace Test
             if (!node.IsTerminal)
             {
                 Pad();
-                Console.WriteLine($"</{node.Name}>");
+               // Console.WriteLine($"</{node.Name}>");
             }
 
         }
@@ -94,7 +94,7 @@ namespace Test
         {
             for (var i = 0; i < indent; i++)
             {
-                Console.Write("    ");
+                //Console.Write("    ");
             }
         }
     }
