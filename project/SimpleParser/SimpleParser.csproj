@@ -46,23 +46,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Grammar.cs" />
-    <Compile Include="Grammar.EOFNode.cs" />
-    <Compile Include="Grammar.NonTerminalNode.cs" />
-    <Compile Include="Grammar.NonTerminalPath.cs" />
-    <Compile Include="Grammar.ParseNode.cs" />
-    <Compile Include="Grammar.TerminalNode.cs" />
-    <Compile Include="AST.cs" />
+    <Compile Include="Grammars\GrammarBuilder.cs" />
+    <Compile Include="Grammars\GrammarDefineException.cs" />
+    <Compile Include="Grammars\Parser\IASTNode.cs" />
+    <Compile Include="Grammars\Parser\IASTVisitor.cs" />
+    <Compile Include="Grammars\Parser\IGrammarParser.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\EOFNode.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\NonTerminalNode.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\NonTerminalPath.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\ParseNode.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\RootNode.cs" />
+    <Compile Include="Grammars\Parser\LLn\Nodes\TerminalNode.cs" />
+    <Compile Include="Grammars\Parser\LLn\ParserContext.cs" />
+    <Compile Include="Grammars\Parser\LLn\ParseReport.cs" />
+    <Compile Include="Grammars\Parser\LLn\Tokens\EOFToken.cs" />
+    <Compile Include="Grammars\Parser\LLn\LLnParser.cs" />
+    <Compile Include="Grammars\Parser\LLn\Tokens\LLnToken.cs" />
+    <Compile Include="Grammars\Parser\LLn\Tokens\NonTerminalToken.cs" />
+    <Compile Include="Grammars\Parser\LLn\Tokens\RootToken.cs" />
+    <Compile Include="Grammars\Parser\LLn\Tokens\TerminalToken.cs" />
     <Compile Include="LexicalParser.cs" />
-    <Compile Include="ParseException.cs" />
+    <Compile Include="Grammars\Parser\ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Grammar.RootTerminalNode.cs" />
-    <Compile Include="Terminal.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenStream.cs" />
+    <Compile Include="Lexical\Token.cs" />
+    <Compile Include="Grammars\Parser\TokenStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

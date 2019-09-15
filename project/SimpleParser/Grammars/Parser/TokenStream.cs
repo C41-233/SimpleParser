@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SimpleParser
+namespace SimpleParser.Grammars.Parser
 {
     internal class TokenStream : IDisposable
     {

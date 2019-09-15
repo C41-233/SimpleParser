@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using SimpleParser;
+using SimpleParser.Grammars;
+using SimpleParser.Grammars.Parser;
 
 namespace Test
 {
@@ -20,21 +22,21 @@ namespace Test
 
             Console.WriteLine();
 
-            var grammar = new Grammar();
+            var grammar = new GrammarBuilder();
 
-            grammar.DefineTerminal("tk_package", (int) TokenDefine.Token, token => token.Value == "package");
-            grammar.DefineTerminal("tk_public", (int)TokenDefine.Token, token => token.Value == "public");
-            grammar.DefineTerminal("tk_final", (int)TokenDefine.Token, token => token.Value == "final");
-            grammar.DefineTerminal("tk_class", (int)TokenDefine.Token, token => token.Value == "class");
-            grammar.DefineTerminal("tk_void", (int)TokenDefine.Token, token => token.Value == "void");
-            grammar.DefineTerminal("tk_static", (int)TokenDefine.Token, token => token.Value == "static");
+            grammar.DefineTerminal("tk_package", (int) TokenDefine.Token, "package");
+            grammar.DefineTerminal("tk_public", (int)TokenDefine.Token,  "public");
+            grammar.DefineTerminal("tk_final", (int)TokenDefine.Token,  "final");
+            grammar.DefineTerminal("tk_class", (int)TokenDefine.Token, "class");
+            grammar.DefineTerminal("tk_void", (int)TokenDefine.Token, "void");
+            grammar.DefineTerminal("tk_static", (int)TokenDefine.Token, "static");
 
             grammar.DefineTerminal("tk_semicolon", (int)TokenDefine.Semicolon);
             grammar.DefineTerminal("tk_dot", (int)TokenDefine.Dot);
             grammar.DefineTerminal("tk_open_brace", (int)TokenDefine.OpenBrace);
             grammar.DefineTerminal("tk_close_brace", (int)TokenDefine.CloseBrace);
 
-            grammar.DefineTerminal("identifier", (int)TokenDefine.Token, token => Regex.IsMatch(token.Value, "[a-zA-Z]+[a-zA-Z0-9]*"));
+            grammar.DefineTerminal("identifier", (int)TokenDefine.Token, "[a-zA-Z]+[a-zA-Z0-9]*");
 
             grammar.DefineRoot("class_definition");
             grammar.DefineRoot("package_sentences", "class_definition");
@@ -55,7 +57,9 @@ namespace Test
 
             grammar.DefineNonTerminal("function_definition", "tk_public", "tk_static", "tk_void", "identifier", "tk_open_brace", "tk_close_brace");
 
-            grammar.Parse(tokens, new ASTVisitor());
+            var parser = grammar.Build();
+
+            parser.Parse(tokens, new ASTVisitor());
         }
     }
 
@@ -69,11 +73,11 @@ namespace Test
             Pad();
             if (node.IsTerminal)
             {
-               // Console.WriteLine(node.Symbols.First());
+                Console.WriteLine($"{node.Name} : {node.Value}");
             }
             else
             {
-                //Console.WriteLine($"<{node.Name}>");
+                Console.WriteLine($"<{node.Name}>");
             }
 
             indent++;
@@ -85,7 +89,7 @@ namespace Test
             if (!node.IsTerminal)
             {
                 Pad();
-               // Console.WriteLine($"</{node.Name}>");
+                Console.WriteLine($"</{node.Name}>");
             }
 
         }
@@ -94,7 +98,7 @@ namespace Test
         {
             for (var i = 0; i < indent; i++)
             {
-                //Console.Write("    ");
+                Console.Write("    ");
             }
         }
     }
