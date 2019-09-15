@@ -39,8 +39,11 @@ namespace SimpleParser.Grammars.Parser.LLn.Nodes
 
         public override void Visit(IASTVisitor visitor)
         {
-            visitor.BeginNode(this);
-            visitor.EndNode(this);
+            if (terminal.IsExplicit)
+            {
+                visitor.BeginNode(this);
+                visitor.EndNode(this);
+            }
         }
 
         int IASTNode.Id => terminal.Id;

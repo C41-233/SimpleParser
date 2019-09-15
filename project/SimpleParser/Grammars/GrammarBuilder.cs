@@ -12,11 +12,13 @@ namespace SimpleParser.Grammars
             public int Id;
             public int Token;
             public string Pattern;
+            public bool Explicit;
         }
 
         private struct NonTerminalPath
         {
             public int Id;
+            public bool Explicit;
             public string[] Path;
         }
 
@@ -34,6 +36,11 @@ namespace SimpleParser.Grammars
 
         public int DefineTerminal(string name, int token, string pattern = null)
         {
+            return DefineTerminal(name, true, token, pattern);
+        }
+
+        public int DefineTerminal(string name, bool isExplicit, int token, string pattern = null)
+        {
             if (terminals.ContainsKey(name))
             {
                 throw GrammarDefineException.DuplicateTerminalDefinition(name);
@@ -43,11 +50,17 @@ namespace SimpleParser.Grammars
                 Id = id,
                 Token = token,
                 Pattern = pattern,
+                Explicit = isExplicit,
             });
             return id++;
         }
 
         public int DefineNonTerminal(string name, params string[] symbols)
+        {
+            return DefineNonTerminal(name, true, symbols);
+        }
+
+        public int DefineNonTerminal(string name, bool isExplicit, params string[] symbols)
         {
             if (!nonTerminals.TryGetValue(name, out var list))
             {
@@ -57,6 +70,7 @@ namespace SimpleParser.Grammars
             list.Add(new NonTerminalPath
             {
                 Id = id,
+                Explicit = isExplicit,
                 Path = (string[])symbols.Clone(),
             });
             return id++;
@@ -79,7 +93,16 @@ namespace SimpleParser.Grammars
 
             foreach (var kv in terminals)
             {
-                nameToToken.Add(kv.Key, new TerminalToken(kv.Value.Id, kv.Key, kv.Value.Token, kv.Value.Pattern));
+                nameToToken.Add(
+                    kv.Key, 
+                    new TerminalToken(
+                        kv.Value.Id, 
+                        kv.Value.Explicit,
+                        kv.Key,
+                        kv.Value.Token, 
+                        kv.Value.Pattern
+                    )
+                );
             }
 
             foreach (var kv in nonTerminals)
@@ -109,7 +132,7 @@ namespace SimpleParser.Grammars
                         tokens[i] = refToken;
                     }
 
-                    token.AddPath(path.Id, tokens);
+                    token.AddPath(path.Id, path.Explicit, tokens);
                 }
             }
 
@@ -129,7 +152,7 @@ namespace SimpleParser.Grammars
 
                 tokens[len] = EOFToken.Instance;
 
-                rootToken.AddPath(path.Id, tokens);
+                rootToken.AddPath(path.Id, false, tokens);
             }
 
             var parser = new LLnParser(rootToken);

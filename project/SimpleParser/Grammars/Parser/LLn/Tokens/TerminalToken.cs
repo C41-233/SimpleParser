@@ -8,12 +8,14 @@ namespace SimpleParser.Grammars.Parser.LLn.Tokens
     {
 
         public int Id { get; }
+        public bool IsExplicit { get; }
         private readonly int token;
         private readonly string pattern;
 
-        public TerminalToken(int id, string name, int token, string pattern) : base(name)
+        public TerminalToken(int id, bool isExplicit, string name, int token, string pattern) : base(name)
         {
             Id = id;
+            IsExplicit = isExplicit;
             this.token = token;
             this.pattern = pattern;
         }

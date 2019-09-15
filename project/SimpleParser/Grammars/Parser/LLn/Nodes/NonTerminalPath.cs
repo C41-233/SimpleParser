@@ -8,6 +8,7 @@ namespace SimpleParser.Grammars.Parser.LLn.Nodes
 
         private readonly int id;
         private readonly string name;
+        private readonly bool isExplicit;
 
         private readonly LLnToken[] path;
         private ParseNode[] nodes;
@@ -22,6 +23,7 @@ namespace SimpleParser.Grammars.Parser.LLn.Nodes
             id = token.Id(n);
             path = token.Path(n);
             name = token.Name;
+            isExplicit = token.IsExplicit(n);
         }
 
         public override void Clear()
@@ -117,12 +119,19 @@ namespace SimpleParser.Grammars.Parser.LLn.Nodes
 
         public override void Visit(IASTVisitor visitor)
         {
-            visitor.BeginNode(this);
+            if (isExplicit)
+            {
+                visitor.BeginNode(this);
+            }
             foreach (var node in nodes)
             {
                 node.Visit(visitor);
             }
-            visitor.EndNode(this);
+
+            if (isExplicit)
+            {
+                visitor.EndNode(this);
+            }
         }
 
         int IASTNode.Id => id;

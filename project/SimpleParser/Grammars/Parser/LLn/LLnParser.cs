@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SimpleParser.Grammars.Parser.LLn.Nodes;
 using SimpleParser.Grammars.Parser.LLn.Tokens;
 

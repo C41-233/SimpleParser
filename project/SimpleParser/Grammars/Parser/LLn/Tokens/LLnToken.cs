@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-using SimpleParser.Grammars.Parser.LLn.Nodes;
+﻿using SimpleParser.Grammars.Parser.LLn.Nodes;
 
 namespace SimpleParser.Grammars.Parser.LLn.Tokens
 {
