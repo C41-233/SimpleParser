@@ -30,10 +30,10 @@ namespace SimpleParser
 
         protected abstract void OnEnd();
 
-        public List<Token> Parse(string file)
+        public List<Token> ParseFromFile(string file)
         {
             Init();
-            using (var reader = new StreamReader(new FileStream(file, FileMode.Open), Encoding.UTF8))
+            using (var reader = new StreamReader(new FileStream(file, FileMode.Open, FileAccess.Read), Encoding.UTF8))
             {
                 do
                 {
@@ -55,10 +55,38 @@ namespace SimpleParser
             }
         }
 
+        public List<Token> Parse(string content)
+        {
+            Init();
+            foreach (var ch in content)
+            {
+                ByteValue = ch;
+                while (!Read())
+                {
+                }
+                ColumnNumber++;
+                if (ByteValue == '\n')
+                {
+                    LineNumber++;
+                    ColumnNumber = 1;
+                }
+            }
+
+            ByteValue = -1;
+            while (!Read())
+            {
+            }
+
+            var result = tokens;
+            Clean();
+            return result;
+        }
+
         protected int ByteValue { get; private set; }
         protected int LineNumber { get; private set; }
         protected int ColumnNumber { get; private set; }
 
+        
         protected abstract bool Read();
 
         protected void PushBuffer()

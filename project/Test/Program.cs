@@ -13,20 +13,18 @@ namespace Test
         static void Main(string[] args)
         {
             var parse = new MyParser();
-            var tokens = parse.Parse(@"G:\workspace\SimpleParser\test.java");
+            var tokens = parse.ParseFromFile(@"G:\workspace\SimpleParser\test.java");
 
             foreach (var token in tokens)
             {
-                //Console.WriteLine($"{(TokenDefine)token.Type} {token.Value}");
+                Console.WriteLine(token.Value);
             }
-
-            Console.WriteLine();
 
             var grammar = new GrammarBuilder();
 
-            grammar.DefineTerminal("tk_package", false, (int) TokenDefine.Token, "package");
-            grammar.DefineTerminal("tk_public", (int)TokenDefine.Token,  "public");
-            grammar.DefineTerminal("tk_final", (int)TokenDefine.Token,  "final");
+            grammar.DefineTerminal("tk_package", false, (int)TokenDefine.Token, "package");
+            grammar.DefineTerminal("tk_public", (int)TokenDefine.Token, "public");
+            grammar.DefineTerminal("tk_final", (int)TokenDefine.Token, "final");
             grammar.DefineTerminal("tk_class", (int)TokenDefine.Token, "class");
             grammar.DefineTerminal("tk_void", (int)TokenDefine.Token, "void");
             grammar.DefineTerminal("tk_static", (int)TokenDefine.Token, "static");
@@ -49,8 +47,8 @@ namespace Test
             grammar.DefineNonTerminal("package_sentence_body_loop", false, "identifier");
             grammar.DefineNonTerminal("package_sentence_body_loop", false, "identifier", "tk_dot", "package_sentence_body_loop");
 
-            grammar.DefineNonTerminal("class_modifiers", true,"tk_public", "tk_final");
-            grammar.DefineNonTerminal("class_definition",  "class_modifiers", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
+            grammar.DefineNonTerminal("class_modifiers", true, "tk_public", "tk_final");
+            grammar.DefineNonTerminal("class_definition", "class_modifiers", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
 
             grammar.DefineNonTerminal("function_loop", false);
             grammar.DefineNonTerminal("function_loop", false, "function_definition");
@@ -58,7 +56,9 @@ namespace Test
 
             grammar.DefineNonTerminal("function_definition", "tk_public", "tk_static", "tk_void", "identifier", "tk_open_brace", "tk_close_brace");
 
-            var parser = grammar.Build();
+            grammar.Load("a->b");
+
+             var parser = grammar.Build();
 
             parser.Parse(tokens, new ASTVisitor());
         }

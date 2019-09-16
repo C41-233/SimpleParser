@@ -5,7 +5,7 @@ using SimpleParser.Grammars.Parser.LLn.Tokens;
 
 namespace SimpleParser.Grammars
 {
-    public sealed class GrammarBuilder
+    public sealed partial class GrammarBuilder
     {
         private struct Terminal
         {

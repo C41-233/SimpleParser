@@ -1,4 +1,5 @@
-﻿using SimpleParser;
+﻿using System;
+using SimpleParser;
 
 namespace Test
 {
@@ -17,6 +18,21 @@ namespace Test
 
         protected override bool Read()
         {
+            if (ByteValue < 0)
+            {
+                switch (Step)
+                {
+                    case LexStep.Init:
+                        break;
+                    case LexStep.WaitForToken:
+                        EndToken();
+                        break;
+                    case LexStep.Whitespace:
+                        break;
+                }
+
+                return true;
+            }
             var ch = (char)ByteValue;
             if (char.IsWhiteSpace(ch))
             {
