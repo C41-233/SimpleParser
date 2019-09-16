@@ -13,7 +13,7 @@ namespace Test
         static void Main(string[] args)
         {
             var parse = new MyParser();
-            var tokens = parse.ParseFromFile(@"G:\workspace\SimpleParser\test.java");
+            var tokens = parse.ParseFile(@"G:\workspace\SimpleParser\test.java");
 
             foreach (var token in tokens)
             {
