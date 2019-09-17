@@ -118,12 +118,21 @@ namespace SimpleParser
         private int bufferLine;
         private int bufferColumn;
 
-        protected void EndBuffer(out string value, out int line, out int column)
+        protected bool EndBuffer(out string value, out int line, out int column)
         {
-            value = buffer.ToString();
-            buffer.Clear();
-            line = bufferLine;
-            column = bufferColumn;
+            if (buffer.Length > 0)
+            {
+                value = buffer.ToString();
+                buffer.Clear();
+                line = bufferLine;
+                column = bufferColumn;
+                return true;
+            }
+
+            value = null;
+            line = 0;
+            column = 0;
+            return false;
         }
 
         protected void PushToken(T token)

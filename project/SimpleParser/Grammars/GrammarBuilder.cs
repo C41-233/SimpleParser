@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using SimpleParser.Grammars.Meta;
+﻿using System.Collections.Generic;
+using System.Text;
 using SimpleParser.Grammars.Parser;
 using SimpleParser.Grammars.Parser.LLn;
 using SimpleParser.Grammars.Parser.LLn.Tokens;
@@ -76,17 +75,6 @@ namespace SimpleParser.Grammars
                 Path = (string[])symbols.Clone(),
             });
             return id++;
-        }
-
-        public int ParseNonTerminal(string name, bool isExplicit, string expression)
-        {
-            var parser = new MetaParser();
-            foreach (var token in parser.Parse(expression))
-            {
-                Console.WriteLine(token.Value);
-            }
-            Console.WriteLine();
-            return 0;
         }
 
         public int DefineRoot(params string[] symbols)
@@ -170,6 +158,38 @@ namespace SimpleParser.Grammars
 
             var parser = new LLnParser(rootToken);
             return parser;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var terminal in terminals)
+            {
+                sb.AppendLine($"{terminal.Key} := {terminal.Value.Token} {terminal.Value.Pattern}");
+            }
+            foreach (var root in roots)
+            {
+                sb.AppendLine($"$root -> {ToString(root.Path)}");
+            }
+
+            foreach (var nonTerminal in nonTerminals)
+            {
+                foreach (var path in nonTerminal.Value)
+                {
+                    sb.AppendLine($"{nonTerminal.Key} -> {ToString(path.Path)}");
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private static string ToString(string[] s)
+        {
+            if (s.Length == 0)
+            {
+                return "$empty";
+            }
+            return string.Join(" ", s);
         }
 
     }

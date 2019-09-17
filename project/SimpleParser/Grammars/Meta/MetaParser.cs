@@ -68,6 +68,34 @@
                         return;
                 }
             }
+            else if (ch == '+')
+            {
+                switch (Step)
+                {
+                    case ParseStep.Idle:
+                        PushToken(MetaTokenType.OneOrMore);
+                        return;
+                    case ParseStep.WaitForSymbol:
+                        EndSymbol();
+                        PushToken(MetaTokenType.OneOrMore);
+                        Step = ParseStep.Idle;
+                        return;
+                }
+            }
+            else if (ch == '|')
+            {
+                switch (Step)
+                {
+                    case ParseStep.Idle:
+                        PushToken(MetaTokenType.Or);
+                        return;
+                    case ParseStep.WaitForSymbol:
+                        EndSymbol();
+                        PushToken(MetaTokenType.Or);
+                        Step = ParseStep.Idle;
+                        return;
+                }
+            }
             else if(ch == '*')
             {
                 switch (Step)
@@ -99,8 +127,10 @@
 
         private void EndSymbol()
         {
-            EndBuffer(out var value, out var line, out var column);
-            PushToken(new MetaToken(MetaTokenType.Symbol, value, line, column));
+            if (EndBuffer(out var value, out var line, out var column))
+            {
+                PushToken(new MetaToken(MetaTokenType.Symbol, value, line, column));
+            }
         }
 
         private void PushToken(MetaTokenType type)

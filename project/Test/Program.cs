@@ -35,19 +35,15 @@ namespace Test
             grammar.ParseNonTerminal("package_sentence", true, "tk_package identifier(tk_dot identifier)* tk_semicolon");
 
             grammar.DefineNonTerminal("class_modifiers", true, "tk_public", "tk_final");
-            grammar.DefineNonTerminal("class_definition", "class_modifiers", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
+            grammar.DefineNonTerminal("class_definition", "class_modifiers", "tk_class", "identifier", "tk_open_brace", "functions", "tk_close_brace");
 
-            grammar.DefineNonTerminal("function_loop", false);
-            grammar.DefineNonTerminal("function_loop", false, "function_definition");
-            grammar.DefineNonTerminal("function_loop", false, "function_definition", "function_loop");
-
+            grammar.ParseNonTerminal("functions", true, "function_definition*");
             grammar.DefineNonTerminal("function_definition", "tk_public", "tk_static", "tk_void", "identifier", "tk_open_brace", "tk_close_brace");
 
-            //var parser = grammar.Build();
-
-            //var parse = new MyParser();
-            //var tokens = parse.ParseFile(@"G:\workspace\SimpleParser\test.java");
-            //parser.Parse(tokens, new ASTVisitor());
+            var parser = grammar.Build();
+            var parse = new MyParser();
+            var tokens = parse.ParseFile(@"G:\workspace\SimpleParser\test.java");
+            parser.Parse(tokens, new ASTVisitor());
         }
     }
 
