@@ -4,7 +4,7 @@ using SimpleParser;
 namespace Test
 {
 
-    public class MyParser : LexicalParser
+    public class MyParser : LexicalParser<LexToken>
     {
 
         protected override void OnBegin()
@@ -16,34 +16,32 @@ namespace Test
         {
         }
 
-        protected override bool Read()
+        protected override void Read()
         {
             if (ByteValue < 0)
             {
                 switch (Step)
                 {
                     case LexStep.Init:
-                        break;
+                        return;
                     case LexStep.WaitForToken:
                         EndToken();
-                        break;
+                        return;
                     case LexStep.Whitespace:
-                        break;
+                        return;
                 }
-
-                return true;
             }
             var ch = (char)ByteValue;
             if (char.IsWhiteSpace(ch))
             {
                 switch (Step)
                 {
-                    case LexStep.Init: break;
+                    case LexStep.Init: return;
                     case LexStep.WaitForToken:
                         EndToken();
                         Step = LexStep.Whitespace;
-                        break;
-                    case LexStep.Whitespace: break;
+                        return;
+                    case LexStep.Whitespace: return;
                 }
             }
             else if (ch == ';')
@@ -52,14 +50,16 @@ namespace Test
                 {
                     case LexStep.Init:
                         PushToken(new LexToken(TokenDefine.Semicolon, ";", LineNumber, ColumnNumber));
-                        break;
+                        return;
                     case LexStep.WaitForToken:
                         EndToken();
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.Semicolon, ";", LineNumber, ColumnNumber));
+                        return;
                     case LexStep.Whitespace:
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.Semicolon, ";", LineNumber, ColumnNumber));
+                        return;
                 }
             }
             else if (ch == '{')
@@ -68,14 +68,16 @@ namespace Test
                 {
                     case LexStep.Init:
                         PushToken(new LexToken(TokenDefine.OpenBrace, "{", LineNumber, ColumnNumber));
-                        break;
+                        return;
                     case LexStep.WaitForToken:
                         EndToken();
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.OpenBrace, "{", LineNumber, ColumnNumber));
+                        return;
                     case LexStep.Whitespace:
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.OpenBrace, "{", LineNumber, ColumnNumber));
+                        return;
                 }
             }
             else if (ch == '}')
@@ -88,10 +90,12 @@ namespace Test
                     case LexStep.WaitForToken:
                         EndToken();
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.CloseBrace, "}", LineNumber, ColumnNumber));
+                        return;
                     case LexStep.Whitespace:
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.CloseBrace, "}", LineNumber, ColumnNumber));
+                        return;
                 }
             }
             else if (ch == '.')
@@ -104,10 +108,12 @@ namespace Test
                     case LexStep.WaitForToken:
                         EndToken();
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.Dot, ".", LineNumber, ColumnNumber));
+                        return;
                     case LexStep.Whitespace:
                         Step = LexStep.Init;
-                        return false;
+                        PushToken(new LexToken(TokenDefine.Dot, ".", LineNumber, ColumnNumber));
+                        return;
                 }
             }
             else
@@ -118,23 +124,21 @@ namespace Test
                         {
                             PushBuffer();
                             Step = LexStep.WaitForToken;
-                            break;
+                            return;
                         }
                     case LexStep.WaitForToken:
                         {
                             PushBuffer();
-                            break;
+                            return;
                         }
                     case LexStep.Whitespace:
                         {
                             PushBuffer();
                             Step = LexStep.WaitForToken;
-                            break;
+                            return;
                         }
                 }
             }
-
-            return true;
         }
 
         private void EndToken()

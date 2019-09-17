@@ -6,10 +6,10 @@ using System.Text;
 namespace SimpleParser
 {
 
-    public abstract class LexicalParser
+    public abstract class LexicalParser<T> where T : Token
     {
 
-        private readonly List<Token> tokens = new List<Token>(1);
+        private readonly List<T> tokens = new List<T>(1);
         private StringBuilder buffer;
 
         private void Init()
@@ -30,7 +30,7 @@ namespace SimpleParser
 
         protected abstract void OnEnd();
 
-        public IEnumerable<Token> ParseFile(string file)
+        public IEnumerable<T> ParseFile(string file)
         {
             Init();
             using (var reader = new StreamReader(new FileStream(file, FileMode.Open, FileAccess.Read), Encoding.UTF8))
@@ -38,9 +38,7 @@ namespace SimpleParser
                 do
                 {
                     ByteValue = reader.Read();
-                    while (!Read())
-                    {
-                    }
+                    Read();
 
                     if (tokens.Count > 0)
                     {
@@ -62,16 +60,13 @@ namespace SimpleParser
             }
         }
 
-        public IEnumerable<Token> Parse(string content)
+        public IEnumerable<T> Parse(string content)
         {
             Init();
             foreach (var ch in content)
             {
                 ByteValue = ch;
-                while (!Read())
-                {
-                }
-
+                Read();
                 if (tokens.Count > 0)
                 {
                     foreach (var token in tokens)
@@ -90,9 +85,7 @@ namespace SimpleParser
             }
 
             ByteValue = -1;
-            while (!Read())
-            {
-            }
+            Read();
 
             if (tokens.Count > 0)
             {
@@ -110,7 +103,7 @@ namespace SimpleParser
         protected int LineNumber { get; private set; }
         protected int ColumnNumber { get; private set; }
 
-        protected abstract bool Read();
+        protected abstract void Read();
 
         protected void PushBuffer()
         {
@@ -133,7 +126,7 @@ namespace SimpleParser
             column = bufferColumn;
         }
 
-        protected void PushToken(Token token)
+        protected void PushToken(T token)
         {
             tokens.Add(token);
         }

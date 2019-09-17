@@ -47,8 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Grammars\GrammarBuilder.cs" />
-    <Compile Include="Grammars\GrammarBuilder_Load.cs" />
     <Compile Include="Grammars\GrammarDefineException.cs" />
+    <Compile Include="Grammars\Meta\MetaParser.cs" />
+    <Compile Include="Grammars\Meta\MetaToken.cs" />
     <Compile Include="Grammars\Parser\IASTNode.cs" />
     <Compile Include="Grammars\Parser\IASTVisitor.cs" />
     <Compile Include="Grammars\Parser\IGrammarParser.cs" />

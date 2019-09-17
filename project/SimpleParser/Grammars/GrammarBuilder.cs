@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SimpleParser.Grammars.Meta;
 using SimpleParser.Grammars.Parser;
 using SimpleParser.Grammars.Parser.LLn;
 using SimpleParser.Grammars.Parser.LLn.Tokens;
@@ -74,6 +76,17 @@ namespace SimpleParser.Grammars
                 Path = (string[])symbols.Clone(),
             });
             return id++;
+        }
+
+        public int ParseNonTerminal(string name, bool isExplicit, string expression)
+        {
+            var parser = new MetaParser();
+            foreach (var token in parser.Parse(expression))
+            {
+                Console.WriteLine(token.Value);
+            }
+            Console.WriteLine();
+            return 0;
         }
 
         public int DefineRoot(params string[] symbols)

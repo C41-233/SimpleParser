@@ -12,14 +12,6 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var parse = new MyParser();
-            var tokens = parse.ParseFile(@"G:\workspace\SimpleParser\test.java");
-
-            foreach (var token in tokens)
-            {
-                Console.WriteLine(token.Value);
-            }
-
             var grammar = new GrammarBuilder();
 
             grammar.DefineTerminal("tk_package", false, (int)TokenDefine.Token, "package");
@@ -39,13 +31,8 @@ namespace Test
             grammar.DefineRoot("class_definition");
             grammar.DefineRoot("package_sentences", "class_definition");
 
-            grammar.DefineNonTerminal("package_sentences", true, "package_sentence_loop");
-            grammar.DefineNonTerminal("package_sentence_loop", false, "package_sentence");
-            grammar.DefineNonTerminal("package_sentence_loop", false, "package_sentence", "package_sentence_loop");
-
-            grammar.DefineNonTerminal("package_sentence", "tk_package", "package_sentence_body_loop", "tk_semicolon");
-            grammar.DefineNonTerminal("package_sentence_body_loop", false, "identifier");
-            grammar.DefineNonTerminal("package_sentence_body_loop", false, "identifier", "tk_dot", "package_sentence_body_loop");
+            grammar.ParseNonTerminal("package_sentences", true, "package_sentence*");
+            grammar.ParseNonTerminal("package_sentence", true, "tk_package identifier(tk_dot identifier)* tk_semicolon");
 
             grammar.DefineNonTerminal("class_modifiers", true, "tk_public", "tk_final");
             grammar.DefineNonTerminal("class_definition", "class_modifiers", "tk_class", "identifier", "tk_open_brace", "function_loop", "tk_close_brace");
@@ -56,11 +43,11 @@ namespace Test
 
             grammar.DefineNonTerminal("function_definition", "tk_public", "tk_static", "tk_void", "identifier", "tk_open_brace", "tk_close_brace");
 
-            grammar.Load("a->b");
+            //var parser = grammar.Build();
 
-             var parser = grammar.Build();
-
-            parser.Parse(tokens, new ASTVisitor());
+            //var parse = new MyParser();
+            //var tokens = parse.ParseFile(@"G:\workspace\SimpleParser\test.java");
+            //parser.Parse(tokens, new ASTVisitor());
         }
     }
 
